@@ -11,12 +11,12 @@
     }
 
     function handleSignOut() {
-        // Implement sign out logic here
-        localStorage.removeItem('token'); // Remove the token from localStorage
-        goto('/signin'); // Redirect to sign in page
+        
+        localStorage.removeItem('token'); 
+        goto('/signin'); 
     }
 
-    // Close dropdown when clicking outside
+    
     onMount(() => {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef && !dropdownRef.contains(event.target as Node)) {

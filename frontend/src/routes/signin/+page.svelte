@@ -23,9 +23,8 @@
         const data = await response.json();
 
         if (response.ok) {
-          // Store the token in localStorage or a more secure place
+        
           localStorage.setItem('token', data.token);
-          // Redirect to the dashboard or home page
           goto('/dashboard');
         } else {
           errorMessage = data.message || 'Invalid email or password';

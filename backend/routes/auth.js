@@ -7,33 +7,39 @@ const { validateSignup, validateLogin, handleValidationErrors, authenticateToken
 const router = express.Router();
 
 // Signup route
-router.post('/signup', validateSignup, handleValidationErrors, async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
-    const { firstName, lastName, email, phoneNumber, password } = req.body;
+    const { email, password } = req.body;
 
-    let user = await User.findOne({ email });
-    if (user) {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    user = new User({
-      firstName,
-      lastName,
+    // Create new user with default Free plan
+    const user = new User({
       email,
-      phoneNumber,
-      password: hashedPassword
+      password: hashedPassword,
+      plan: 'Free'  // Set default plan
     });
 
     await user.save();
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
     res.status(201).json({ token });
   } catch (error) {
-    console.error('Error in signup route:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Error signing up', error: error.message });
   }
 });
 
@@ -63,6 +69,16 @@ router.post('/login', validateLogin, handleValidationErrors, async (req, res) =>
 // Verify token route
 router.get('/verify', isSignedIn, (req, res) => {
   res.status(200).json({ message: 'Token is valid', userId: req.user.userId });
+});
+
+router.get('/user', isSignedIn, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.userId).select('-password');
+        res.json(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Error fetching user details' });
+    }
 });
 
 module.exports = router;

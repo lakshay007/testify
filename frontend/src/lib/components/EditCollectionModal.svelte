@@ -6,42 +6,59 @@
     import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "$lib/components/ui/select";
     import { Textarea } from "$lib/components/ui/textarea";
     import { X, Plus, Pen, Upload, ChevronDown } from "lucide-svelte";
+    import type { Collection } from "$lib/types/collection";
   
     export let isOpen = false;
     export let onClose: () => void;
+    export let collection: Collection | null = null;
+    export let onUpdate: () => void;
   
     let spaceName = "";
     let headerTitle = "";
     let customMessage = "";
-    let questions = [
-      "Who are you / what are you working on?",
-      "How has [our product / service] helped you?",
-      "What is the best thing about [our product / service]"
-    ];
+    let questions: string[] = [];
     let extraInfo = {
-      name: false,
-      email: false,
-      title: false,
-      socialLink: false
+        name: false,
+        email: false,
+        title: false,
+        socialLink: false
     };
     let collectStarRatings = false;
     let buttonColor = "#4F46E5";
     let language = "English";
-  
-    // Add a new variable for the logo
     let logo: string | null = null;
-
     let fileInput: HTMLInputElement;
+    let extraInfoDropdownOpen = false;
+    let initialized = false;
 
-    // Add these constants at the top of your script
-    const MAX_WIDTH = 200;
-    const MAX_HEIGHT = 200;
-    const QUALITY = 0.7;
+    const languages = [
+        "English", "Spanish", "French", "German", "Chinese (Simplified)", "Chinese (Traditional)",
+        "Japanese", "Korean", "Arabic", "Russian", "Portuguese", "Italian", "Dutch", "Polish",
+        "Turkish", "Swedish", "Danish", "Norwegian", "Finnish", "Greek", "Hebrew", "Hindi",
+        "Thai", "Vietnamese", "Indonesian", "Malay", "Tagalog", "Other"
+    ];
+  
+    $: if (collection && isOpen && !initialized) {
+        spaceName = collection.spaceName;
+        headerTitle = collection.headerTitle;
+        customMessage = collection.customMessage;
+        questions = [...collection.questions];
+        extraInfo = { ...collection.extraInfo };
+        collectStarRatings = collection.collectStarRatings;
+        buttonColor = collection.buttonColor;
+        language = collection.language;
+        logo = collection.logo;
+        initialized = true;
+    }
+
+    $: if (!isOpen) {
+        initialized = false;
+    }
 
     function addQuestion() {
-      if (questions.length < 5) {
-        questions = [...questions, ""];
-      }
+        if (questions.length < 5) {
+            questions = [...questions, ""];
+        }
     }
 
     function handleLogoUpload(event: Event) {
@@ -57,14 +74,14 @@
                     let height = img.height;
 
                     if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
+                        if (width > 200) {
+                            height *= 200 / width;
+                            width = 200;
                         }
                     } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
+                        if (height > 200) {
+                            width *= 200 / height;
+                            height = 200;
                         }
                     }
 
@@ -73,7 +90,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx?.drawImage(img, 0, 0, width, height);
 
-                    logo = canvas.toDataURL('image/jpeg', QUALITY);
+                    logo = canvas.toDataURL('image/jpeg', 0.7);
                 };
                 img.src = e.target?.result as string;
             };
@@ -85,60 +102,47 @@
         fileInput.click();
     }
 
-    let extraInfoDropdownOpen = false;
-
     function toggleExtraInfoDropdown() {
         extraInfoDropdownOpen = !extraInfoDropdownOpen;
     }
 
-    const languages = [
-        "English", "Spanish", "French", "German", "Chinese (Simplified)", "Chinese (Traditional)",
-        "Japanese", "Korean", "Arabic", "Russian", "Portuguese", "Italian", "Dutch", "Polish",
-        "Turkish", "Swedish", "Danish", "Norwegian", "Finnish", "Greek", "Hebrew", "Hindi",
-        "Thai", "Vietnamese", "Indonesian", "Malay", "Tagalog", "Other"
-    ];
+    async function handleUpdate() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No token found');
+            }
 
-    async function handleSubmit() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
+            const response = await fetch(`http://localhost:4000/api/collections/${collection?.spaceName}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    logo,
+                    headerTitle,
+                    customMessage,
+                    questions,
+                    extraInfo,
+                    collectStarRatings,
+                    buttonColor,
+                    language
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                onClose();
+                onUpdate();
+            } else {
+                throw new Error(data.message || 'Failed to update collection');
+            }
+        } catch (error) {
+            console.error('Error updating collection:', error);
+            alert(error instanceof Error ? error.message : 'Failed to update collection');
         }
-
-        const response = await fetch('http://localhost:4000/api/collections', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            spaceName,
-            logo,
-            headerTitle,
-            customMessage,
-            questions,
-            extraInfo,
-            collectStarRatings,
-            buttonColor,
-            language
-          })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          
-          onClose();
-         
-          window.location.reload(); 
-        } else {
-          throw new Error(data.message || 'Failed to create collection');
-        }
-      } catch (error) {
-        console.error('Error creating collection:', error);
-        // You might want to show an error message to the user
-        alert(error.message);
-      }
     }
 </script>
 
@@ -146,7 +150,7 @@
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-gray-900 rounded-lg p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto text-gray-100">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-indigo-300">Add New Collection</h2>
+        <h2 class="text-2xl font-bold text-indigo-300">Edit Collection</h2>
         <button on:click={onClose} class="text-gray-400 hover:text-indigo-300 transition-colors">
           <X size={24} />
         </button>
@@ -155,8 +159,14 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="space-y-6">
           <div>
-            <Label for="spaceName" class="text-indigo-300">Space name *</Label>
-            <Input type="text" id="spaceName" bind:value={spaceName} class="bg-gray-800 border-gray-700 text-gray-100" />
+            <Label for="spaceName" class="text-indigo-300">Space name</Label>
+            <Input 
+              type="text" 
+              id="spaceName" 
+              value={spaceName} 
+              disabled 
+              class="bg-gray-800 border-gray-700 text-gray-100 cursor-not-allowed opacity-60" 
+            />
             <p class="text-sm text-gray-400 mt-1">Public URL is: testify.to/{spaceName}</p>
           </div>
 
@@ -187,7 +197,7 @@
 
           <div>
             <Label for="customMessage" class="text-indigo-300">Your custom message *</Label>
-            <Textarea id="customMessage" bind:value={customMessage} rows="3" class="bg-gray-800 border-gray-700 text-gray-100" />
+            <Textarea id="customMessage" bind:value={customMessage} class="bg-gray-800 border-gray-700 text-gray-100" />
             <p class="text-sm text-gray-400 mt-1">Markdown supported</p>
           </div>
 
@@ -255,9 +265,9 @@
 
           <div>
             <Label for="language" class="text-indigo-300">Language</Label>
-            <Select bind:value={language}>
+            <Select value={language} onValueChange={(value) => language = value}>
               <SelectTrigger class="bg-gray-800 border-gray-700 text-gray-100">
-                <SelectValue placeholder="Select a language" />
+                <SelectValue>{language}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {#each languages as lang}
@@ -313,10 +323,13 @@
       </div>
 
       <div class="mt-8 flex justify-end">
-        <Button on:click={onClose} variant="outline" class="mr-2 bg-gray-800 text-indigo-300 border-indigo-600 hover:bg-gray-700">Cancel</Button>
-        <Button on:click={handleSubmit} class="bg-indigo-600 text-white hover:bg-indigo-700">Create Collection</Button>
+        <Button on:click={onClose} variant="outline" class="mr-2 bg-gray-800 text-indigo-300 border-indigo-600 hover:bg-gray-700">
+          Cancel
+        </Button>
+        <Button on:click={handleUpdate} class="bg-indigo-600 text-white hover:bg-indigo-700">
+          Update Collection
+        </Button>
       </div>
     </div>
   </div>
 {/if}
-

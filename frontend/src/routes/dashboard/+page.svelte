@@ -4,15 +4,18 @@
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-    import { Search, Plus, Loader } from "lucide-svelte";
+    import { Search, Plus, Loader, ChevronRight, Edit } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import AddCollectionModal from "$lib/components/AddCollectionModal.svelte";
+    import EditCollectionModal from "$lib/components/EditCollectionModal.svelte";
 
     let isLoading = true;
-    let currentPlan = "Pro";
+    let currentPlan = "Free";  // Default to Free
     let collections: any[] = [];
     let searchQuery = "";
     let isAddCollectionModalOpen = false;
+    let isEditCollectionModalOpen = false;
+    let selectedCollection: any = null;
 
     onMount(async () => {
         await checkAuthentication();
@@ -25,27 +28,55 @@
                 throw new Error('No token found');
             }
 
-            const response = await fetch('http://localhost:4000/api/auth/verify', {
-                method: 'GET',
+            // Verify token
+            const authResponse = await fetch('http://localhost:4000/api/auth/verify', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!authResponse.ok) {
+                throw new Error('Authentication failed');
+            }
+
+          
+            const userResponse = await fetch('http://localhost:4000/api/auth/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user details');
+            }
+
+            const userData = await userResponse.json();
+            currentPlan = userData.plan;  
+
+            isLoading = false;
+            await fetchCollections();
+        } catch (error) {
+            console.error('Authentication error:', error);
+            goto('/signin');
+        }
+    }
+
+    async function fetchCollections() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:4000/api/collections', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
 
             if (!response.ok) {
-                throw new Error('Authentication failed');
+                throw new Error('Failed to fetch collections');
             }
 
-            const data = await response.json();
-            console.log('User verified:', data);
-
-            // If we reach here, the user is authenticated
-            isLoading = false;
-            // Here you would typically fetch the user's data and collections
-            // For now, we'll just set isLoading to false
+            collections = await response.json();
         } catch (error) {
-            console.error('Authentication error:', error);
-            goto('/signin');
+            console.error('Error fetching collections:', error);
         }
     }
 
@@ -59,6 +90,16 @@
 
     function closeAddCollectionModal() {
         isAddCollectionModalOpen = false;
+    }
+
+    function openEditCollectionModal(collection: any) {
+        selectedCollection = collection;
+        isEditCollectionModalOpen = true;
+    }
+
+    function closeEditCollectionModal() {
+        isEditCollectionModalOpen = false;
+        selectedCollection = null;
     }
 </script>
 
@@ -116,14 +157,28 @@
                 {#if collections.length > 0}
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {#each collections as collection}
-                            <Card class="bg-gray-800 border-gray-700">
-                                <CardHeader>
-                                    <CardTitle class="text-indigo-300">{collection.name}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p class="text-sm text-gray-400">{collection.testimonials} testimonials</p>
-                                </CardContent>
-                            </Card>
+                            <div class="relative">
+                                <Button 
+                                    on:click={() => openEditCollectionModal(collection)}
+                                    class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 p-2 rounded-full z-10"
+                                >
+                                    <Edit class="h-4 w-4 text-indigo-300" />
+                                </Button>
+                                <a href="/{collection.spaceName}" class="block transition-transform hover:-translate-y-1">
+                                    <Card class="bg-gray-800 border-gray-700 hover:border-indigo-500">
+                                        <CardHeader>
+                                            <CardTitle class="text-indigo-300">{collection.spaceName}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p class="text-sm text-gray-400">{collection.testimonials} testimonials</p>
+                                            <div class="mt-4 flex items-center text-indigo-400">
+                                                <span>View collection card</span>
+                                                <ChevronRight class="h-4 w-4 ml-1" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </a>
+                            </div>
                         {/each}
                     </div>
                 {:else}
@@ -140,4 +195,10 @@
     {/if}
 
     <AddCollectionModal isOpen={isAddCollectionModalOpen} onClose={closeAddCollectionModal} />
+    <EditCollectionModal 
+        isOpen={isEditCollectionModalOpen} 
+        onClose={closeEditCollectionModal}
+        collection={selectedCollection}
+        onUpdate={fetchCollections}
+    />
 </div>
