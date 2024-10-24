@@ -4,16 +4,20 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const collectionsRoutes = require('./routes/collections');
-
+const testimonialRoutes = require('./routes/testimonials');
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Configure CORS to allow both public and authenticated requests
 app.use(cors({
-  origin: 'http://localhost:5173', 
-  credentials: true
+  origin: '*',  // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allow all necessary methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow Authorization header
+  credentials: true  // Allow credentials
 }));
+
 app.use(express.json());
 
 // MongoDB connection
@@ -30,6 +34,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/collections', collectionsRoutes);
+app.use('/api/testimonials', testimonialRoutes);
 
 // Global error handler
 app.use((err, req, res, next) => {

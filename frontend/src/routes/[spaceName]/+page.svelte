@@ -3,12 +3,14 @@
     import { Button } from "$lib/components/ui/button";
     import { Pen, Loader } from "lucide-svelte";
     import type { Collection } from '$lib/types/collection';
+    import TestimonialFormModal from "$lib/components/TestimonialFormModal.svelte";
 
     export let data: { spaceName: string };
     
     let collection: Collection | null = null;
     let isLoading = true;
     let error: string | null = null;
+    let isFormModalOpen = false;
 
     onMount(async () => {
         try {
@@ -23,6 +25,14 @@
             isLoading = false;
         }
     });
+
+    function openFormModal() {
+        isFormModalOpen = true;
+    }
+
+    function closeFormModal() {
+        isFormModalOpen = false;
+    }
 </script>
 
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -73,6 +83,7 @@
                     <Button 
                         class="w-full flex items-center justify-center text-white" 
                         style="background-color: {collection.buttonColor};"
+                        on:click={openFormModal}
                     >
                         <Pen class="mr-2 h-4 w-4" />
                         Send in text
@@ -80,5 +91,13 @@
                 </div>
             </div>
         </div>
+    {/if}
+
+    {#if collection && isFormModalOpen}
+        <TestimonialFormModal
+            isOpen={isFormModalOpen}
+            onClose={closeFormModal}
+            collection={collection}
+        />
     {/if}
 </div>

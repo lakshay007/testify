@@ -164,7 +164,7 @@
                                 >
                                     <Edit class="h-4 w-4 text-indigo-300" />
                                 </Button>
-                                <a href="/{collection.spaceName}" class="block transition-transform hover:-translate-y-1">
+                                <a href="/dashboard/{collection.spaceName}" class="block transition-transform hover:-translate-y-1">
                                     <Card class="bg-gray-800 border-gray-700 hover:border-indigo-500">
                                         <CardHeader>
                                             <CardTitle class="text-indigo-300">{collection.spaceName}</CardTitle>

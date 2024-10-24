@@ -7,17 +7,22 @@ const router = express.Router();
 // Create a new collection
 router.post('/', isSignedIn, async (req, res) => {
   try {
+    // Add validation for required fields
+    if (!req.user?.userId) {
+      return res.status(401).json({ message: 'User not authenticated properly' });
+    }
+
     const {
       spaceName,
-      logo,
       headerTitle,
       customMessage,
-      questions,
-      extraInfo,
-      collectStarRatings,
-      buttonColor,
-      language
+      questions
     } = req.body;
+
+    // Add validation for required fields
+    if (!spaceName || !headerTitle || !customMessage || !questions?.length) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
 
     // Check if spaceName is already taken
     const existingCollection = await Collection.findOne({ spaceName });
@@ -25,17 +30,23 @@ router.post('/', isSignedIn, async (req, res) => {
       return res.status(400).json({ message: 'Space name is already taken' });
     }
 
+    // Sanitize and validate spaceName format
+    const sanitizedSpaceName = spaceName.toLowerCase().trim().replace(/[^a-z0-9-]/g, '-');
+    if (sanitizedSpaceName !== spaceName) {
+      return res.status(400).json({ message: 'Space name can only contain lowercase letters, numbers, and hyphens' });
+    }
+
     const collection = new Collection({
       userId: req.user.userId,
-      spaceName,
-      logo,
+      spaceName: sanitizedSpaceName,
+      logo: req.body.logo,
       headerTitle,
       customMessage,
       questions,
-      extraInfo,
-      collectStarRatings,
-      buttonColor,
-      language
+      extraInfo: req.body.extraInfo || {},
+      collectStarRatings: req.body.collectStarRatings || false,
+      buttonColor: req.body.buttonColor || "#4F46E5",
+      language: req.body.language || "English"
     });
 
     await collection.save();
@@ -77,6 +88,26 @@ router.get('/:spaceName', async (req, res) => {
             error: error.message 
         });
     }
+});
+
+router.get('/private/:spaceName', isSignedIn, async (req, res) => {
+  try {
+      const collection = await Collection.findOne(
+          { spaceName: req.params.spaceName, userId: req.user.userId }
+      );
+      
+      if (!collection) {
+          return res.status(404).json({ message: 'Collection not found' });
+      }
+
+      res.json(collection);
+  } catch (error) {
+      console.error('Error fetching collection:', error);
+      res.status(500).json({ 
+          message: 'Error fetching collection', 
+          error: error.message 
+      });
+  }
 });
 
 // Update collection
