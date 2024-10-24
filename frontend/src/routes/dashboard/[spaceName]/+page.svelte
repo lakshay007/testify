@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit } from "lucide-svelte";
+    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
 
@@ -29,8 +29,6 @@
 
             collection = await collectionResponse.json();
             console.log('Fetched collection:', collection); // Debug log
-
-            
 
             // Then fetch testimonials
             const testimonialsResponse = await fetch(`http://localhost:4000/api/testimonials/collection/${collection._id}`, {
@@ -99,7 +97,16 @@
                             on:click={() => setActiveTab('widget1')}
                         >
                             <Code size={18} class="mr-2" />
-                            Generate Code
+                            Carousel Code
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'wall' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
+                            on:click={() => setActiveTab('wall')}
+                        >
+                            <Grid size={18} class="mr-2" />
+                            Wall of Shoutouts
                         </button>
                     </li>
                 </ul>
@@ -205,17 +212,28 @@
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed your testimonials carousel on your website:</p>
                     <div class="space-y-4">
                         <pre class="bg-gray-900 p-4 rounded-md overflow-x-auto">
-                            <code class="text-indigo-300">{`<div id="testify-testimonials"></div>
-<script src="http://localhost:5173/embed.js" onload="TestifyWidget.init('${data.spaceName}')"></script>`}</code>
+                            <code class="text-indigo-300">{`<iframe id="testify-carousel" src="http://localhost:5173/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script type="text/javascript">
+    iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');
+</script>`}</code>
                         </pre>
-                        <div class="mt-4">
-                            <h3 class="text-lg font-semibold text-indigo-300 mb-2">Customization Options</h3>
-                            <div class="bg-gray-900 p-4 rounded-md">
-                                <ul class="space-y-2 text-gray-400">
-                                    <li>Add options like this: <code>TestifyWidget.init('${data.spaceName}')</code></li>
-                                </ul>
-                            </div>
-                        </div>
+                        
+                    </div>
+                </div>
+            {:else if activeTab === 'wall'}
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h2 class="text-2xl font-bold text-indigo-300 mb-4">Embed Wall of Shoutouts</h2>
+                    <p class="text-gray-400 mb-4">Copy and paste this code to embed a wall of testimonials on your website:</p>
+                    <div class="space-y-4">
+                        <pre class="bg-gray-900 p-4 rounded-md overflow-x-auto">
+                            <code class="text-indigo-300">{`<iframe id="testify-wall" src="http://localhost:5173/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script type="text/javascript">
+    iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');
+</script>`}</code>
+                        </pre>
+                        
                     </div>
                 </div>
             {:else if activeTab === 'analytics'}
@@ -227,4 +245,3 @@
         {/if}
     </main>
 </div>
-
