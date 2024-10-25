@@ -46,3 +46,21 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+const url = `https://testify-5dye.onrender.com`;
+const interval = 300000; 
+
+
+app.get('/keep-alive', (req, res) => {
+    res.status(200).send('Server is alive');
+});
+
+
+const keepAliveInterval = 10 * 60 * 1000; // 14 minutes
+
+function keepAlive() {
+    fetch(url + 'keep-alive')
+        .then(response => console.log('Keep-alive response:', response.status))
+        .catch(error => console.error('Keep-alive error:', error));
+}
+
+setInterval(keepAlive, keepAliveInterval);
