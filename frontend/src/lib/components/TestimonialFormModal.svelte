@@ -49,7 +49,7 @@
                 }
             };
 
-            const response = await fetch(`http://localhost:4000/api/testimonials/by-space/${collection.spaceName}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials/by-space/${collection.spaceName}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

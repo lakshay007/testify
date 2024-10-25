@@ -14,7 +14,7 @@
 
     onMount(async () => {
         try {
-            const response = await fetch(`http://localhost:4000/api/collections/${data.spaceName}`);
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections/${data.spaceName}`);
             if (!response.ok) {
                 throw new Error('Collection not found');
             }

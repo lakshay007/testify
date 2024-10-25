@@ -29,7 +29,7 @@
             }
 
             // Verify token
-            const authResponse = await fetch('http://localhost:4000/api/auth/verify', {
+            const authResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/verify`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -40,7 +40,7 @@
             }
 
           
-            const userResponse = await fetch('http://localhost:4000/api/auth/user', {
+            const userResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/user`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -64,7 +64,7 @@
     async function fetchCollections() {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:4000/api/collections', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

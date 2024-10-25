@@ -15,7 +15,7 @@
 
     onMount(async () => {
         try {
-            const response = await fetch(`http://localhost:4000/api/testimonials/public/${data.spaceName}`);
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials/public/${data.spaceName}`);
             if (!response.ok) throw new Error('Failed to load testimonials');
             testimonials = await response.json();
             isLoading = false;

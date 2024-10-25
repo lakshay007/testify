@@ -113,7 +113,7 @@
                 throw new Error('No token found');
             }
 
-            const response = await fetch(`http://localhost:4000/api/collections/${collection?.spaceName}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections/${collection?.spaceName}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

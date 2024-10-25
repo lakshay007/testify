@@ -5,6 +5,7 @@
     import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
+    import { goto } from '$app/navigation';
 
     export let data: { spaceName: string };
     
@@ -17,8 +18,9 @@
 
     onMount(async () => {
         try {
+            await checkAuthentication();
             // Fetch the collection details
-            const collectionResponse = await fetch(`http://localhost:4000/api/collections/private/${data.spaceName}`, {
+            const collectionResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections/private/${data.spaceName}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -32,7 +34,7 @@
             console.log('Fetched collection:', collection); // Debug log
 
             // Then fetch testimonials
-            const testimonialsResponse = await fetch(`http://localhost:4000/api/testimonials/collection/${collection._id}`, {
+            const testimonialsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials/collection/${collection._id}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
@@ -57,6 +59,28 @@
 
     function toggleSidebar() {
         isSidebarOpen = !isSidebarOpen;
+    }
+    async function checkAuthentication() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No token found');
+            }
+
+            // Verify token
+            const authResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/verify`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!authResponse.ok) {
+                throw new Error('Authentication failed');
+            }
+        } catch (error) {
+            console.error('Authentication error:', error);
+            goto('/signin');
+        }
     }
 </script>
 
@@ -239,7 +263,7 @@
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed your testimonials carousel on your website:</p>
                     <div class="space-y-4">
                         <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-carousel" 
-    src="http://localhost:5173/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+    src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`}</code></pre>
                     </div>
@@ -250,7 +274,7 @@
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed a wall of testimonials on your website:</p>
                     <div class="space-y-4">
                         <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-wall" 
-    src="http://localhost:5173/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+    src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`}</code></pre>
                     </div>

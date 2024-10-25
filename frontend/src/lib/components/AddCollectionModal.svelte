@@ -105,7 +105,7 @@
           throw new Error('No token found');
         }
 
-        const response = await fetch('http://localhost:4000/api/collections', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

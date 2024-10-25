@@ -6,6 +6,11 @@ const { validateSignup, validateLogin, handleValidationErrors, authenticateToken
 
 const router = express.Router();
 
+// Add health check route at the top
+router.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+});
+
 // Signup route
 router.post('/signup', async (req, res) => {
   try {
