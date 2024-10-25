@@ -46,7 +46,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-const url = `https://testify-5dye.onrender.com`;
+const url = `https://testify-5dye.onrender.com/`;
 const interval = 300000; 
 
 
