@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid } from "lucide-svelte";
+    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
 
@@ -13,6 +13,7 @@
     let isLoading = true;
     let error: string | null = null;
     let activeTab = 'all';
+    let isSidebarOpen = false;
 
     onMount(async () => {
         try {
@@ -53,13 +54,35 @@
     function setActiveTab(tab: string) {
         activeTab = tab;
     }
+
+    function toggleSidebar() {
+        isSidebarOpen = !isSidebarOpen;
+    }
 </script>
 
-<div class="min-h-screen bg-gray-900 text-gray-100 flex">
+<div class="min-h-screen bg-gray-900 text-gray-100">
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 z-20 bg-gray-800 p-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-indigo-300">{data.spaceName}</h2>
+        <Button variant="ghost" size="icon" on:click={toggleSidebar}>
+            {#if isSidebarOpen}
+                <X size={24} />
+            {:else}
+                <Menu size={24} />
+            {/if}
+        </Button>
+    </div>
+
     <!-- Sidebar -->
-    <aside class="w-64 bg-gray-800 p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-xl font-bold text-indigo-300">{data.spaceName}</h2>
+    <aside class="
+        fixed h-screen bg-gray-800 p-6 flex flex-col overflow-y-auto z-10
+        lg:w-64 lg:left-0 lg:translate-x-0 lg:block
+        w-64 transition-transform duration-200 ease-in-out
+        {isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        top-0 bottom-0
+    ">
+        <div class="flex items-center justify-between mb-8 mt-14 lg:mt-0">
+            <h2 class="text-xl font-bold text-indigo-300 lg:block">{data.spaceName}</h2>
             <Button variant="ghost" size="icon" class="text-indigo-400 hover:text-indigo-300">
                 <Edit size={20} />
             </Button>
@@ -122,16 +145,20 @@
                 </button>
             </div>
         </nav>
-        <div class="mt-auto">
+        <!-- <div class="mt-auto">
             <Button variant="outline" class="w-full">
                 <Settings size={18} class="mr-2" />
                 Settings
             </Button>
-        </div>
+        </div> -->
     </aside>
 
     <!-- Main content -->
-    <main class="flex-grow p-8">
+    <main class="
+        p-4 lg:p-8 
+        lg:ml-64 
+        mt-16 lg:mt-0
+    ">
         {#if isLoading}
             <div class="flex justify-center items-center h-[60vh]">
                 <Loader class="animate-spin h-12 w-12 text-indigo-400" />
@@ -142,12 +169,12 @@
             </div>
         {:else}
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-indigo-300">Testimonials for {data.spaceName}</h1>
+                <h1 class="text-2xl lg:text-3xl font-bold text-indigo-300">Testimonials for {data.spaceName}</h1>
                 <p class="text-gray-400 mt-2">View and manage testimonials for this collection</p>
             </div>
 
             {#if activeTab === 'all' || activeTab === 'spam'}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                     {#if testimonials.length === 0}
                         <div class="col-span-full text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
                             <p class="text-xl text-indigo-300 mb-4">No testimonials yet</p>
@@ -207,38 +234,30 @@
                     {/if}
                 </div>
             {:else if activeTab === 'widget1'}
-                <div class="bg-gray-800 p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold text-indigo-300 mb-4">Embed Testimonials</h2>
+                <div class="bg-gray-800 p-4 lg:p-6 rounded-lg">
+                    <h2 class="text-xl lg:text-2xl font-bold text-indigo-300 mb-4">Embed Testimonials</h2>
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed your testimonials carousel on your website:</p>
                     <div class="space-y-4">
-                        <pre class="bg-gray-900 p-4 rounded-md overflow-x-auto">
-                            <code class="text-indigo-300">{`<iframe id="testify-carousel" src="http://localhost:5173/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
-<script type="text/javascript">
-    iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');
-</script>`}</code>
-                        </pre>
-                        
+                        <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-carousel" 
+    src="http://localhost:5173/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`}</code></pre>
                     </div>
                 </div>
             {:else if activeTab === 'wall'}
-                <div class="bg-gray-800 p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold text-indigo-300 mb-4">Embed Wall of Shoutouts</h2>
+                <div class="bg-gray-800 p-4 lg:p-6 rounded-lg">
+                    <h2 class="text-xl lg:text-2xl font-bold text-indigo-300 mb-4">Embed Wall of Shoutouts</h2>
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed a wall of testimonials on your website:</p>
                     <div class="space-y-4">
-                        <pre class="bg-gray-900 p-4 rounded-md overflow-x-auto">
-                            <code class="text-indigo-300">{`<iframe id="testify-wall" src="http://localhost:5173/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
-<script type="text/javascript">
-    iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');
-</script>`}</code>
-                        </pre>
-                        
+                        <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-wall" 
+    src="http://localhost:5173/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`}</code></pre>
                     </div>
                 </div>
             {:else if activeTab === 'analytics'}
-                <div class="bg-gray-800 p-6 rounded-lg">
-                    <h2 class="text-2xl font-bold text-indigo-300 mb-4">Analytics</h2>
+                <div class="bg-gray-800 p-4 lg:p-6 rounded-lg">
+                    <h2 class="text-xl lg:text-2xl font-bold text-indigo-300 mb-4">Analytics</h2>
                     <p class="text-gray-400">Analytics data will be displayed here.</p>
                 </div>
             {/if}
