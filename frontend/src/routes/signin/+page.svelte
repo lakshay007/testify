@@ -5,12 +5,15 @@
     import { Card } from "$lib/components/ui/card";
     import { ChevronLeft } from "lucide-svelte";
     import { goto } from "$app/navigation";
+    import { Loader } from "lucide-svelte";
   
     let email = "";
     let password = "";
     let errorMessage = "";
+    let isLoading = false;
   
     async function handleSubmit() {
+      isLoading = true;
       try {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`, {
           method: 'POST',
@@ -23,7 +26,6 @@
         const data = await response.json();
 
         if (response.ok) {
-        
           localStorage.setItem('token', data.token);
           goto('/dashboard');
         } else {
@@ -32,6 +34,8 @@
       } catch (error) {
         console.error('Error:', error);
         errorMessage = 'An error occurred. Please try again.';
+      } finally {
+        isLoading = false;
       }
     }
   </script>
@@ -61,8 +65,17 @@
           {#if errorMessage}
             <p class="text-red-500 text-sm">{errorMessage}</p>
           {/if}
-          <Button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
-            Sign In
+          <Button 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            disabled={isLoading}
+          >
+            {#if isLoading}
+              <Loader class="animate-spin mr-2 h-4 w-4" />
+              Signing in...
+            {:else}
+              Sign In
+            {/if}
           </Button>
         </form>
         <div class="mt-6 text-center space-y-2">

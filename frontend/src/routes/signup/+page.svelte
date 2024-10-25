@@ -3,7 +3,7 @@
     import { Input } from "$lib/components/ui/input";
     import { Label } from "$lib/components/ui/label";
     import { Card } from "$lib/components/ui/card";
-    import { ChevronLeft, Star } from "lucide-svelte";
+    import { ChevronLeft, Star, Loader } from "lucide-svelte";
     import { goto } from "$app/navigation";
     import { fade, fly } from 'svelte/transition';
   
@@ -13,29 +13,33 @@
     let phoneNumber = "";
     let password = "";
     let errorMessage = "";
+    let isLoading = false;  // Add loading state
   
     async function handleSubmit() {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ firstName, lastName, email, phoneNumber, password }),
-        });
+        isLoading = true;  // Start loading
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ firstName, lastName, email, phoneNumber, password }),
+            });
   
-        const data = await response.json();
+            const data = await response.json();
   
-        if (response.ok) {
-          localStorage.setItem('token', data.token);
-          goto('/dashboard');
-        } else {
-          errorMessage = data.message || 'An error occurred during signup';
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                goto('/dashboard');
+            } else {
+                errorMessage = data.message || 'An error occurred during signup';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            errorMessage = 'An error occurred. Please try again.';
+        } finally {
+            isLoading = false;  // End loading
         }
-      } catch (error) {
-        console.error('Error:', error);
-        errorMessage = 'An error occurred. Please try again.';
-      }
     }
   </script>
   
@@ -90,8 +94,17 @@
             {#if errorMessage}
               <p class="text-red-500 text-sm" in:fade>{errorMessage}</p>
             {/if}
-            <Button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white transition-all duration-200 transform hover:scale-105">
-              Create Account
+            <Button 
+                type="submit" 
+                class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white transition-all duration-200 transform hover:scale-105"
+                disabled={isLoading}
+            >
+                {#if isLoading}
+                    <Loader class="animate-spin mr-2 h-4 w-4" />
+                    Creating Account...
+                {:else}
+                    Create Account
+                {/if}
             </Button>
           </form>
           <div class="mt-6 text-center">
