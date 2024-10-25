@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X } from "lucide-svelte";
+    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X, Copy, Check } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
     import { goto } from '$app/navigation';
@@ -15,6 +15,8 @@
     let error: string | null = null;
     let activeTab = 'all';
     let isSidebarOpen = false;
+    let copiedCarousel = false;
+    let copiedWall = false;
 
     onMount(async () => {
         try {
@@ -81,6 +83,18 @@
             console.error('Authentication error:', error);
             goto('/signin');
         }
+    }
+
+    function copyToClipboard(text: string, type: 'carousel' | 'wall') {
+        navigator.clipboard.writeText(text).then(() => {
+            if (type === 'carousel') {
+                copiedCarousel = true;
+                setTimeout(() => copiedCarousel = false, 2000);
+            } else {
+                copiedWall = true;
+                setTimeout(() => copiedWall = false, 2000);
+            }
+        });
     }
 </script>
 
@@ -259,22 +273,56 @@
                 </div>
             {:else if activeTab === 'widget1'}
                 <div class="bg-gray-800 p-4 lg:p-6 rounded-lg">
-                    <h2 class="text-xl lg:text-2xl font-bold text-indigo-300 mb-4">Embed Testimonials</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl lg:text-2xl font-bold text-indigo-300">Embed Testimonials</h2>
+                        <Button 
+                            variant="ghost" 
+                            size="sm"
+                            class="text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors"
+                            on:click={() => copyToClipboard(`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`, 'carousel')}
+                        >
+                            {#if copiedCarousel}
+                                <Check class="h-4 w-4 mr-2" />
+                                Copied!
+                            {:else}
+                                <Copy class="h-4 w-4 mr-2" />
+                                Copy Code
+                            {/if}
+                        </Button>
+                    </div>
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed your testimonials carousel on your website:</p>
                     <div class="space-y-4">
-                        <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-carousel" 
-    src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+                        <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`}</code></pre>
                     </div>
                 </div>
             {:else if activeTab === 'wall'}
                 <div class="bg-gray-800 p-4 lg:p-6 rounded-lg">
-                    <h2 class="text-xl lg:text-2xl font-bold text-indigo-300 mb-4">Embed Wall of Shoutouts</h2>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl lg:text-2xl font-bold text-indigo-300">Embed Wall of Shoutouts</h2>
+                        <Button 
+                            variant="ghost" 
+                            size="sm"
+                            class="text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors"
+                            on:click={() => copyToClipboard(`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
+<script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`, 'wall')}
+                        >
+                            {#if copiedWall}
+                                <Check class="h-4 w-4 mr-2" />
+                                Copied!
+                            {:else}
+                                <Copy class="h-4 w-4 mr-2" />
+                                Copy Code
+                            {/if}
+                        </Button>
+                    </div>
                     <p class="text-gray-400 mb-4">Copy and paste this code to embed a wall of testimonials on your website:</p>
                     <div class="space-y-4">
-                        <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-wall" 
-    src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+                        <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`}</code></pre>
                     </div>
@@ -288,3 +336,4 @@
         {/if}
     </main>
 </div>
+
