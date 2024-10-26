@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from "$lib/components/ui/button";
     import { Card } from "$lib/components/ui/card";
-    import { ChevronRight, Star, Code, Send, Layout, Heart } from "lucide-svelte";
+    import { ChevronRight, Star, Code, Send, Layout, Heart, Menu } from "lucide-svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
   
@@ -21,6 +21,8 @@
   
     let hearts: { x: number; y: number; scale: number }[] = [];
   
+    let isMenuOpen = false;
+  
     onMount(() => {
       const interval = setInterval(() => {
         if (hearts.length < 10) {
@@ -39,16 +41,40 @@
   </script>
   
   <div class="bg-gradient-to-b from-purple-100 to-pink-100 min-h-screen">
-    <header class="container mx-auto px-4 py-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-purple-600">testify.live</h1>
-      <nav>
-        <ul class="flex space-x-4">
-          <li><a href="#features" class="text-purple-600 hover:text-purple-800">Features</a></li>
-          <li><a href="#how-it-works" class="text-purple-600 hover:text-purple-800">How It Works</a></li>
-          <li><a href="/signin" class="text-purple-600 hover:text-purple-800">Login</a></li>
-          <li><a href="/signup" class="text-purple-600 hover:text-purple-800">Signup</a></li>
-        </ul>
-      </nav>
+    <header class="container mx-auto px-4 py-6">
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-purple-600">Testify.tech</h1>
+        
+        <!-- Mobile menu button -->
+        <button 
+            class="md:hidden p-2 text-purple-600 hover:text-purple-800"
+            on:click={() => isMenuOpen = !isMenuOpen}
+        >
+          <Menu size={24} />
+        </button>
+
+        <!-- Desktop navigation -->
+        <nav class="hidden md:block">
+          <ul class="flex space-x-6">
+            <li><a href="#features" class="text-purple-600 hover:text-purple-800 font-medium">Features</a></li>
+            <li><a href="#how-it-works" class="text-purple-600 hover:text-purple-800 font-medium">How It Works</a></li>
+            <li><a href="/signin" class="text-purple-600 hover:text-purple-800 font-medium">Login</a></li>
+            <li><a href="/signup" class="text-purple-600 hover:text-purple-800 font-medium">Signup</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Mobile navigation -->
+      {#if isMenuOpen}
+        <nav class="md:hidden mt-4">
+          <ul class="flex flex-col space-y-4">
+            <li><a href="#features" class="block text-purple-600 hover:text-purple-800 font-medium">Features</a></li>
+            <li><a href="#how-it-works" class="block text-purple-600 hover:text-purple-800 font-medium">How It Works</a></li>
+            <li><a href="/signin" class="block text-purple-600 hover:text-purple-800 font-medium">Login</a></li>
+            <li><a href="/signup" class="block text-purple-600 hover:text-purple-800 font-medium">Signup</a></li>
+          </ul>
+        </nav>
+      {/if}
     </header>
   
     <main>
@@ -105,7 +131,7 @@
   
     <footer class="bg-purple-800 py-12 text-white">
       <div class="container mx-auto px-4 text-center">
-        <p>&copy; 2024 testify.live. All rights reserved.</p>
+        <p>&copy; 2024 Testify.tech. All rights reserved.</p>
       </div>
     </footer>
   </div>

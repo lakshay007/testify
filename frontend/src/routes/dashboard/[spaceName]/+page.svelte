@@ -18,6 +18,7 @@
     let copiedCarousel = false;
     let copiedWall = false;
     let isProfileDropdownOpen = false;
+    let spamThreshold = 0.6; // Configurable spam threshold
 
     onMount(async () => {
         try {
@@ -113,6 +114,34 @@
 
     function goToProfile() {
         goto('/profile');
+    }
+
+    // Add this function after your existing functions
+    function calculateSpamScore(testimonial: any): number {
+        let score = 0;
+        const text = testimonial.testimonialText.toLowerCase();
+        
+        // Check for spam indicators
+        const spamIndicators = {
+            hasLinks: /(http|www|\.com|\.net|\.org)/i.test(text),
+            excessivePunctuation: /[!?]{2,}/.test(text),
+            allCaps: testimonial.testimonialText === testimonial.testimonialText.toUpperCase(),
+            spamKeywords: /(buy|cheap|discount|offer|price|deal|free|warranty|casino|viagra|forex|crypto)/i.test(text),
+            shortText: text.length < 10,
+            repeatedCharacters: /(.)\1{4,}/.test(text), // Detects character repeated 5+ times
+            fewWords: text.trim().split(/\s+/).length < 5 // Check for less than 5 words
+        };
+
+        // Weight different indicators
+        if (spamIndicators.hasLinks) score += 0.3;
+        if (spamIndicators.excessivePunctuation) score += 0.2;
+        if (spamIndicators.allCaps) score += 0.2;
+        if (spamIndicators.spamKeywords) score += 0.3;
+        if (spamIndicators.shortText) score += 0.1;
+        if (spamIndicators.repeatedCharacters) score += 0.2;
+        if (spamIndicators.fewWords) score += 0.3; // Add significant weight for very short testimonials
+
+        return Math.min(score, 1); // Cap score at 1
     }
 </script>
 
@@ -328,8 +357,11 @@
                                 <p class="text-gray-400">Share your collection link to start receiving testimonials!</p>
                             </div>
                         {:else}
-                            {#each testimonials as testimonial}
-                                <Card class="bg-gray-800 border-gray-700">
+                            {#each testimonials.filter(t => {
+                                const isSpam = calculateSpamScore(t) >= spamThreshold;
+                                return activeTab === 'spam' ? isSpam : !isSpam;
+                            }) as testimonial}
+                                <Card class="bg-gray-800 border-gray-700 {calculateSpamScore(testimonial) >= spamThreshold ? 'border-red-800' : ''}">
                                     <CardHeader>
                                         <div class="flex justify-between items-start">
                                             <div>
@@ -374,6 +406,10 @@
                                         {/if}
                                         <div class="mt-4 text-sm text-gray-500">
                                             {new Date(testimonial.createdAt).toLocaleDateString()}
+                                        </div>
+                                        <!-- Add spam score indicator for debugging -->
+                                        <div class="text-xs text-gray-500 mt-2">
+                                            Spam Score: {(calculateSpamScore(testimonial) * 100).toFixed(1)}%
                                         </div>
                                     </CardContent>
                                 </Card>
