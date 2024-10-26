@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const collectionsRoutes = require('./routes/collections');
 const testimonialRoutes = require('./routes/testimonials');
+const profileRoutes = require('./routes/profiles');
 dotenv.config();
 
 const app = express();
@@ -36,7 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/collections', collectionsRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 
-// Global error handler
+app.use('/api/profile', profileRoutes);
 app.use((err, req, res, next) => {
   console.error('Global error handler:');
   console.error(err);
@@ -64,3 +65,4 @@ function keepAlive() {
 }
 
 setInterval(keepAlive, keepAliveInterval);
+

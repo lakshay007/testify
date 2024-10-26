@@ -55,7 +55,7 @@
                     </a>
                     <a href="/profile" class="block px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center">
                         <User size={18} class="mr-2" />
-                        Profile
+                        Settings
                     </a>
                     <button 
                         on:click={handleSignOut}

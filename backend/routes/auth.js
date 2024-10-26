@@ -13,39 +13,53 @@ router.get('/health', (req, res) => {
 
 // Signup route
 router.post('/signup', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        console.log('Received signup data:', req.body); // Add this for debugging
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+        const { firstName, lastName, email, password, phoneNumber } = req.body;
+
+        // Validate all required fields are present
+        if (!firstName || !lastName || !email || !password || !phoneNumber) {
+            return res.status(400).json({ 
+                message: 'All fields are required',
+                receivedData: { firstName, lastName, email, phoneNumber } // Don't include password in logs
+            });
+        }
+
+        // Create new user
+        const user = new User({
+            firstName,
+            lastName,
+            email,
+            password,
+            phoneNumber
+        });
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        await user.save();
+
+        // Generate token
+        const token = jwt.sign(
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.status(201).json({ token });
+    } catch (error) {
+        console.error('Signup error:', error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+        res.status(500).json({ 
+            message: 'Error in signup',
+            error: error.message,
+            details: error
+        });
     }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create new user with default Free plan
-    const user = new User({
-      email,
-      password: hashedPassword,
-      plan: 'Free'  // Set default plan
-    });
-
-    await user.save();
-
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.status(201).json({ token });
-  } catch (error) {
-    console.error('Signup error:', error);
-    res.status(500).json({ message: 'Error signing up', error: error.message });
-  }
 });
 
 // Login route

@@ -2,7 +2,7 @@
     import { onMount } from 'svelte';
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X, Copy, Check } from "lucide-svelte";
+    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X, Copy, Check, User, LogOut, LayoutDashboard, UserCircle } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
     import { goto } from '$app/navigation';
@@ -17,6 +17,7 @@
     let isSidebarOpen = false;
     let copiedCarousel = false;
     let copiedWall = false;
+    let isProfileDropdownOpen = false;
 
     onMount(async () => {
         try {
@@ -96,11 +97,67 @@
             }
         });
     }
+
+    function toggleProfileDropdown() {
+        isProfileDropdownOpen = !isProfileDropdownOpen;
+    }
+
+    function handleSignOut() {
+        localStorage.removeItem('token');
+        goto('/signin');
+    }
+
+    function goToDashboard() {
+        goto('/dashboard');
+    }
+
+    function goToProfile() {
+        goto('/profile');
+    }
 </script>
 
 <div class="min-h-screen bg-gray-900 text-gray-100">
-    <!-- Header -->
-    <Header />
+   
+
+    <!-- Profile Icon -->
+    <div class="absolute top-4 right-4 z-50">
+        <div class="relative">
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                class="text-indigo-400 hover:text-indigo-300"
+                on:click={toggleProfileDropdown}
+            >
+                <User size={24} />
+            </Button>
+            
+            {#if isProfileDropdownOpen}
+                <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md overflow-hidden shadow-xl z-10">
+                    <button 
+                        class="w-full text-left px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center"
+                        on:click={goToProfile}
+                    >
+                        <UserCircle size={18} class="mr-2" />
+                        Profile
+                    </button>
+                    <button 
+                        class="w-full text-left px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center"
+                        on:click={goToDashboard}
+                    >
+                        <LayoutDashboard size={18} class="mr-2" />
+                        Dashboard
+                    </button>
+                    <button 
+                        class="w-full text-left px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center"
+                        on:click={handleSignOut}
+                    >
+                        <LogOut size={18} class="mr-2" />
+                        Sign Out
+                    </button>
+                </div>
+            {/if}
+        </div>
+    </div>
 
     <div class="flex">
         <!-- Sidebar -->
@@ -393,3 +450,4 @@
 <style>
     /* Add any additional styles here */
 </style>
+
