@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CircleUser, Menu, Package2, Camera } from "lucide-svelte";
+  import { CircleUser, Menu, Package2, Camera, Lock } from "lucide-svelte";
 
   import { Button } from "$lib/components/ui/button/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
@@ -260,12 +260,27 @@
     >
       <nav class="text-gray-400 grid gap-4 text-sm"
         data-x-chunk-container="chunk-container after:right-0">
-        <a href="##" class="text-indigo-400 font-semibold"> General </a>
-        <a href="##" class="hover:text-indigo-400">Security</a>
-        <a href="##" class="hover:text-indigo-400">Integrations</a>
-        <a href="##" class="hover:text-indigo-400">Support</a>
-        <a href="##" class="hover:text-indigo-400">Organizations</a>
-        <a href="##" class="hover:text-indigo-400">Advanced</a>
+        <a href="##" class="text-indigo-400 font-semibold">General</a>
+        <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+          <Lock class="h-4 w-4" />
+          <span>Security</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+          <Lock class="h-4 w-4" />
+          <span>Integrations</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+          <Lock class="h-4 w-4" />
+          <span>Support</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+          <Lock class="h-4 w-4" />
+          <span>Organizations</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+          <Lock class="h-4 w-4" />
+          <span>Advanced</span>
+        </div>
       </nav>
       <div class="grid gap-6">
         <Card.Root class="bg-gray-800 border-gray-700">
@@ -353,6 +368,7 @@
     {errorMessage}
   </div>
 {/if}
+
 
 
 
