@@ -75,7 +75,7 @@
 <svelte:window bind:scrollY bind:innerHeight />
 
 <div class="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-indigo-100">
-  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm">
+  <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm pt-safe">
     <div class="container mx-auto px-4 py-4">
       <nav class="flex justify-between items-center">
         <h1 class="text-2xl font-bold text-purple-800">Testify.tech</h1>
@@ -113,7 +113,7 @@
     </div>
   {/if}
 
-  <main class="pt-16">
+  <main class="pt-safe">
     <section class="min-h-screen flex items-center justify-center text-center px-4 relative overflow-hidden">
       <div in:fade={{ duration: 1000, delay: 300 }}>
         <h2 class="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-600">
@@ -202,6 +202,20 @@
   :global(body) {
     @apply bg-gradient-to-br from-purple-100 via-pink-100 to-indigo-100;
     background-attachment: fixed;
+    /* Add support for safe areas */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Add these utility classes */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   @keyframes float {
