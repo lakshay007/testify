@@ -148,8 +148,8 @@
 <div class="min-h-screen bg-gray-900 text-gray-100">
    
 
-    <!-- Profile Icon -->
-    <div class="absolute top-4 right-4 z-50">
+    <!-- Profile Icon (Desktop only) -->
+    <div class="absolute top-4 right-4 z-50 hidden lg:block">
         <div class="relative">
             <Button 
                 variant="ghost" 
@@ -336,7 +336,7 @@
         <!-- Main Content -->
         <main class="flex-1 p-6 lg:ml-64">
             <!-- Mobile Header with Hamburger and Profile -->
-            <div class="lg:hidden flex justify-between items-center mb-6 mt-14">
+            <div class="lg:hidden flex justify-between items-center mb-6 relative">
                 <Button 
                     variant="ghost" 
                     size="icon" 
@@ -346,7 +346,42 @@
                     <Menu size={24} />
                 </Button>
                 <h2 class="text-xl font-bold text-indigo-300">{data.spaceName}</h2>
-                <div class="w-10"><!-- Empty div for flex spacing --></div>
+                <div class="relative">
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        class="text-indigo-400 hover:text-indigo-300"
+                        on:click={toggleProfileDropdown}
+                    >
+                        <User size={24} />
+                    </Button>
+                    
+                    {#if isProfileDropdownOpen}
+                        <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md overflow-hidden shadow-xl z-50">
+                            <button 
+                                class="w-full text-left px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center"
+                                on:click={goToProfile}
+                            >
+                                <UserCircle size={18} class="mr-2" />
+                                Profile
+                            </button>
+                            <button 
+                                class="w-full text-left px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center"
+                                on:click={goToDashboard}
+                            >
+                                <LayoutDashboard size={18} class="mr-2" />
+                                Dashboard
+                            </button>
+                            <button 
+                                class="w-full text-left px-4 py-2 text-sm text-indigo-400 hover:bg-gray-700 flex items-center"
+                                on:click={handleSignOut}
+                            >
+                                <LogOut size={18} class="mr-2" />
+                                Sign Out
+                            </button>
+                        </div>
+                    {/if}
+                </div>
             </div>
 
             {#if isLoading}
@@ -500,5 +535,8 @@
 <style>
     /* Add any additional styles here */
 </style>
+
+
+
 
 
