@@ -35,10 +35,12 @@
 <header class="bg-gray-800 shadow-md">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
         <div class="flex items-center">
-            <svg class="h-8 w-8 text-indigo-400 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 12V8H4V12M20 12V16H4V12M20 12H4M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="text-xl font-bold text-indigo-400">Testify.tech</span>
+            <img 
+                src="/logo2.svg" 
+                alt="Testify Logo" 
+                class="h-8 w-8 text-indigo-400 mr-2"
+            />
+            <span class="text-xl font-bold text-indigo-400">Testify</span>
         </div>
         <div class="relative" bind:this={dropdownRef}>
             <button 

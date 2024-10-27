@@ -78,7 +78,10 @@
   <header class="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm pt-safe">
     <div class="container mx-auto px-4 py-4">
       <nav class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-purple-800">Testify.tech</h1>
+        <div class="flex items-center gap-2">
+          <img src="/logo.svg" alt="Testify Logo" class="h-8 w-8" />
+          <h1 class="text-2xl font-bold text-purple-800">Testify</h1>
+        </div>
         <button class="md:hidden" on:click={toggleMenu}>
           <Menu class="text-purple-800" />
         </button>
@@ -96,7 +99,7 @@
     <div class="fixed inset-0 z-40 bg-white bg-opacity-90 backdrop-blur-md md:hidden">
       <div class="container mx-auto px-4 py-4">
         <div class="flex justify-between items-center mb-8">
-          <h1 class="text-2xl font-bold text-purple-800">Testify.tech</h1>
+          <h1 class="text-2xl font-bold text-purple-800">Testify</h1>
           <button on:click={toggleMenu}>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -189,7 +192,7 @@
 
   <footer class="bg-purple-800 py-12 text-white">
     <div class="container mx-auto px-4 text-center">
-      <p>&copy; 2024 Testify.tech. All rights reserved.</p>
+      <p>&copy; 2024 Testify. All rights reserved.</p>
     </div>
   </footer>
 </div>

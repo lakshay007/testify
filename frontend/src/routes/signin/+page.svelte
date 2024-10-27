@@ -52,7 +52,7 @@
   
     <main class="flex-grow flex items-center justify-center px-4">
       <Card class="w-full max-w-md p-8 bg-white shadow-lg">
-        <h1 class="text-3xl font-bold text-center mb-6 text-purple-600">Sign In to Testify.tech</h1>
+        <h1 class="text-3xl font-bold text-center mb-6 text-purple-600">Sign In to Testify</h1>
         <form on:submit|preventDefault={handleSubmit} class="space-y-4">
           <div class="space-y-2">
             <Label for="email">Email</Label>
@@ -92,7 +92,7 @@
   
     <footer class="bg-purple-800 py-6 text-white">
       <div class="container mx-auto px-4 text-center">
-        <p>&copy; 2024 Testify.tech. All rights reserved.</p>
+        <p>&copy; 2024 Testify. All rights reserved.</p>
       </div>
     </footer>
   </div>

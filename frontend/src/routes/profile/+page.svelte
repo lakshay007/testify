@@ -200,8 +200,12 @@
       class="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6"
     >
       <a href="##" class="flex items-center gap-2 text-lg font-semibold md:text-base">
-        <Package2 class="h-6 w-6 text-indigo-400" />
-        <span class="sr-only">Acme Inc</span>
+        <img 
+          src="/logo2.svg" 
+          alt="Testify Logo" 
+          class="h-6 w-6 text-indigo-400"
+        />
+        <span class="text-indigo-400">Testify</span>
       </a>
     </nav>
     <Sheet.Root>
@@ -219,8 +223,12 @@
       <Sheet.Content side="left" class="bg-gray-800 text-gray-100">
         <nav class="grid gap-6 text-lg font-medium">
           <a href="##" class="flex items-center gap-2 text-lg font-semibold">
-            <Package2 class="h-6 w-6 text-indigo-400" />
-            <span class="sr-only">Acme Inc</span>
+            <img 
+              src="/logo2.svg" 
+              alt="Testify Logo" 
+              class="h-6 w-6 text-indigo-400"
+            />
+            <span class="text-indigo-400">Testify</span>
           </a>
           <a href="##" class="text-gray-400 hover:text-indigo-400"> Dashboard </a>
           <a href="##" class="text-indigo-400 hover:text-indigo-300"> Settings </a>
@@ -368,6 +376,7 @@
     {errorMessage}
   </div>
 {/if}
+
 
 
 
