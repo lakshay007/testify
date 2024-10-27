@@ -164,20 +164,23 @@
                                 >
                                     <Edit class="h-4 w-4 text-indigo-300" />
                                 </Button>
-                                <a href="/dashboard/{collection.spaceName}" class="block transition-transform hover:-translate-y-1">
-                                    <Card class="bg-gray-800 border-gray-700 hover:border-indigo-500">
-                                        <CardHeader>
+                                <Card class="bg-gray-800 border-gray-700 hover:border-indigo-500">
+                                    <CardHeader>
+                                        <a href="/dashboard/{collection.spaceName}" class="block">
                                             <CardTitle class="text-indigo-300">{collection.spaceName}</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <p class="text-sm text-gray-400">{collection.testimonials} testimonials</p>
-                                            <div class="mt-4 flex items-center text-indigo-400">
-                                                <span>View collection card</span>
-                                                <ChevronRight class="h-4 w-4 ml-1" />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </a>
+                                        </a>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p class="text-sm text-gray-400">{collection.testimonials} testimonials</p>
+                                        <a 
+                                            href="/{collection.spaceName}" 
+                                            class="mt-4 flex items-center text-indigo-400 hover:text-indigo-300"
+                                        >
+                                            <span>View collection cards</span>
+                                            <ChevronRight class="h-4 w-4 ml-1" />
+                                        </a>
+                                    </CardContent>
+                                </Card>
                             </div>
                         {/each}
                     </div>
