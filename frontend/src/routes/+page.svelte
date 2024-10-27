@@ -96,21 +96,50 @@
   </header>
 
   {#if isMenuOpen}
-    <div class="fixed inset-0 z-40 bg-white bg-opacity-90 backdrop-blur-md md:hidden">
+    <div class="fixed inset-0 z-40 bg-gradient-to-br from-purple-100/95 via-pink-100/95 to-indigo-100/95 backdrop-blur-md md:hidden">
       <div class="container mx-auto px-4 py-4">
-        <div class="flex justify-between items-center mb-8">
-          <h1 class="text-2xl font-bold text-purple-800">Testify</h1>
-          <button on:click={toggleMenu}>
+        <div class="flex justify-end mb-8">
+          <button on:click={toggleMenu} class="p-2 hover:bg-purple-100 rounded-full transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        <ul class="flex flex-col space-y-4">
-          <li><a href="#features" class="text-purple-800 hover:text-purple-600 transition-colors text-lg" on:click={toggleMenu}>Key Features</a></li>
-          <li><a href="#how-it-works" class="text-purple-800 hover:text-purple-600 transition-colors text-lg" on:click={toggleMenu}>How It Works</a></li>
-          <li><a href="/signin" class="text-purple-800 hover:text-purple-600 transition-colors text-lg">Login</a></li>
-          <li><a href="/signup" class="text-purple-800 hover:text-purple-600 transition-colors text-lg">Signup</a></li>
+        <ul class="flex flex-col space-y-6 mt-12">
+          <li>
+            <a 
+              href="#features" 
+              class="text-purple-800 hover:text-purple-600 transition-colors text-2xl font-semibold flex items-center justify-center p-4 hover:bg-white/50 rounded-xl" 
+              on:click={toggleMenu}
+            >
+              Key Features
+            </a>
+          </li>
+          <li>
+            <a 
+              href="#how-it-works" 
+              class="text-purple-800 hover:text-purple-600 transition-colors text-2xl font-semibold flex items-center justify-center p-4 hover:bg-white/50 rounded-xl" 
+              on:click={toggleMenu}
+            >
+              How It Works
+            </a>
+          </li>
+          <li>
+            <a 
+              href="/signin" 
+              class="text-purple-800 hover:text-purple-600 transition-colors text-2xl font-semibold flex items-center justify-center p-4 hover:bg-white/50 rounded-xl"
+            >
+              Login
+            </a>
+          </li>
+          <li>
+            <a 
+              href="/signup" 
+              class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-2xl font-semibold flex items-center justify-center p-4 rounded-xl transition-colors"
+            >
+              Sign Up
+            </a>
+          </li>
         </ul>
       </div>
     </div>

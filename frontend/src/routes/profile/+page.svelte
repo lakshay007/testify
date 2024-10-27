@@ -230,8 +230,27 @@
             />
             <span class="text-indigo-400">Testify</span>
           </a>
-          <a href="##" class="text-gray-400 hover:text-indigo-400"> Dashboard </a>
-          <a href="##" class="text-indigo-400 hover:text-indigo-300"> Settings </a>
+          <a href="##" class="text-gray-400 hover:text-indigo-400">General</a>
+          <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+            <Lock class="h-4 w-4" />
+            <span>Security</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+            <Lock class="h-4 w-4" />
+            <span>Integrations</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+            <Lock class="h-4 w-4" />
+            <span>Support</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+            <Lock class="h-4 w-4" />
+            <span>Organizations</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
+            <Lock class="h-4 w-4" />
+            <span>Advanced</span>
+          </div>
         </nav>
       </Sheet.Content>
     </Sheet.Root>
@@ -266,7 +285,7 @@
     <div
       class="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]"
     >
-      <nav class="text-gray-400 grid gap-4 text-sm"
+      <nav class="text-gray-400 grid gap-4 text-sm hidden md:grid"
         data-x-chunk-container="chunk-container after:right-0">
         <a href="##" class="text-indigo-400 font-semibold">General</a>
         <div class="flex items-center gap-2 text-gray-500 cursor-not-allowed">
@@ -376,6 +395,7 @@
     {errorMessage}
   </div>
 {/if}
+
 
 
 

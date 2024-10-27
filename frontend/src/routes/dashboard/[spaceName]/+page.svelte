@@ -335,6 +335,20 @@
 
         <!-- Main Content -->
         <main class="flex-1 p-6 lg:ml-64">
+            <!-- Mobile Header with Hamburger and Profile -->
+            <div class="lg:hidden flex justify-between items-center mb-6 mt-14">
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    class="text-indigo-400 hover:text-indigo-300"
+                    on:click={toggleSidebar}
+                >
+                    <Menu size={24} />
+                </Button>
+                <h2 class="text-xl font-bold text-indigo-300">{data.spaceName}</h2>
+                <div class="w-10"><!-- Empty div for flex spacing --></div>
+            </div>
+
             {#if isLoading}
                 <div class="flex justify-center items-center h-[60vh]">
                     <Loader class="animate-spin h-12 w-12 text-indigo-400" />
@@ -438,8 +452,8 @@
                             </Button>
                         </div>
                         <p class="text-gray-400 mb-4">Copy and paste this code to embed your testimonials carousel on your website:</p>
-                        <div class="space-y-4">
-                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+                        <div class="max-w-full overflow-x-auto">
+                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md text-sm lg:text-base whitespace-pre-wrap break-all"><code class="text-indigo-300">{`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`}</code></pre>
                         </div>
@@ -466,8 +480,8 @@
                             </Button>
                         </div>
                         <p class="text-gray-400 mb-4">Copy and paste this code to embed a wall of testimonials on your website:</p>
-                        <div class="space-y-4">
-                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md overflow-x-auto text-sm lg:text-base"><code class="text-indigo-300 whitespace-pre">{`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+                        <div class="max-w-full overflow-x-auto">
+                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md text-sm lg:text-base whitespace-pre-wrap break-all"><code class="text-indigo-300">{`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`}</code></pre>
                         </div>
@@ -486,4 +500,5 @@
 <style>
     /* Add any additional styles here */
 </style>
+
 
