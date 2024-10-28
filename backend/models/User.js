@@ -28,7 +28,9 @@ const UserSchema = new mongoose.Schema({
   plan: {
     type: String,
     default: 'free'
-  }
+  },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

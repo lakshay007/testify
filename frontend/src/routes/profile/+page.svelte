@@ -71,7 +71,7 @@
                 firstName = userData.firstName;
                 lastName = userData.lastName;
                 email = userData.email;
-                avatar = userData.avatarURL || "";  // Changed from avatar to avatarURL
+                avatar = userData.avatarURL || "";  
             }
         } catch (error) {
             console.error('Error loading profile:', error);
@@ -108,7 +108,7 @@
                     ctx?.drawImage(img, 0, 0, width, height);
 
                     avatar = canvas.toDataURL('image/jpeg', 0.7);
-                    // Removed the updateProfile() call from here
+                    
                 };
                 img.src = e.target?.result as string;
             };
@@ -128,7 +128,7 @@
                 body: JSON.stringify({
                     firstName,
                     lastName,
-                    avatarURL: avatar || null  // Changed from avatar to avatarURL
+                    avatarURL: avatar || null  
                 })
             });
 
@@ -191,7 +191,7 @@
     }
 </script>
 
-<!-- Rest of the template remains the same as in your original file, just update the form handlers -->
+
 
 
 <div class="flex min-h-screen w-full flex-col bg-gray-900 text-gray-100">
