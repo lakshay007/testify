@@ -6,6 +6,7 @@
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
     import { goto } from '$app/navigation';
+    import EmbedTestimonialsModal from "$lib/components/EmbedTestimonialsModal.svelte";
 
     export let data: { spaceName: string };
     
@@ -19,6 +20,7 @@
     let copiedWall = false;
     let isProfileDropdownOpen = false;
     let spamThreshold = 0.6; // Configurable spam threshold
+    let isEmbedModalOpen = false;
 
     onMount(async () => {
         try {
@@ -143,6 +145,10 @@
 
         return Math.min(score, 1); // Cap score at 1
     }
+
+    function openEmbedModal() {
+        isEmbedModalOpen = true;
+    }
 </script>
 
 <div class="min-h-screen bg-gray-900 text-gray-100">
@@ -226,20 +232,11 @@
                     <ul class="space-y-2">
                         <li>
                             <button
-                                class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'widget1' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                                on:click={() => setActiveTab('widget1')}
+                                class="flex items-center w-full p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700"
+                                on:click={openEmbedModal}
                             >
                                 <Code size={18} class="mr-2" />
-                                Carousel Code
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'wall' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                                on:click={() => setActiveTab('wall')}
-                            >
-                                <Grid size={18} class="mr-2" />
-                                Wall of Shoutouts
+                                Embed Testimonials
                             </button>
                         </li>
                     </ul>
@@ -301,20 +298,11 @@
                         <ul class="space-y-2">
                             <li>
                                 <button
-                                    class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'widget1' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                                    on:click={() => setActiveTab('widget1')}
+                                    class="flex items-center w-full p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700"
+                                    on:click={openEmbedModal}
                                 >
                                     <Code size={18} class="mr-2" />
-                                    Carousel Code
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'wall' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                                    on:click={() => setActiveTab('wall')}
-                                >
-                                    <Grid size={18} class="mr-2" />
-                                    Wall of Shoutouts
+                                    Embed Testimonials
                                 </button>
                             </li>
                         </ul>
@@ -473,7 +461,7 @@
                                 variant="ghost" 
                                 size="sm"
                                 class="text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors"
-                                on:click={() => copyToClipboard(`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+                                on:click={() => copyToClipboard(`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`, 'carousel')}
                             >
@@ -488,7 +476,7 @@
                         </div>
                         <p class="text-gray-400 mb-4">Copy and paste this code to embed your testimonials carousel on your website:</p>
                         <div class="max-w-full overflow-x-auto">
-                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md text-sm lg:text-base whitespace-pre-wrap break-all"><code class="text-indigo-300">{`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="400px"></iframe>
+                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md text-sm lg:text-base whitespace-pre-wrap break-all"><code class="text-indigo-300">{`<iframe id="testify-carousel" src="${import.meta.env.VITE_FRONTEND_URL}/carousel/${data.spaceName}" frameborder="0" scrolling="no" width="100%"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-carousel');</script>`}</code></pre>
                         </div>
@@ -501,7 +489,7 @@
                                 variant="ghost" 
                                 size="sm"
                                 class="text-indigo-300 hover:text-indigo-200 hover:bg-indigo-500/10 transition-colors"
-                                on:click={() => copyToClipboard(`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+                                on:click={() => copyToClipboard(`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="no" width="100%" ></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`, 'wall')}
                             >
@@ -516,7 +504,7 @@
                         </div>
                         <p class="text-gray-400 mb-4">Copy and paste this code to embed a wall of testimonials on your website:</p>
                         <div class="max-w-full overflow-x-auto">
-                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md text-sm lg:text-base whitespace-pre-wrap break-all"><code class="text-indigo-300">{`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%" height="100vw"></iframe>
+                            <pre class="bg-gray-900 p-3 lg:p-4 rounded-md text-sm lg:text-base whitespace-pre-wrap break-all"><code class="text-indigo-300">{`<iframe id="testify-wall" src="${import.meta.env.VITE_FRONTEND_URL}/wall/${data.spaceName}" frameborder="0" scrolling="yes" width="100%"></iframe>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.6/iframeResizer.min.js"></script>
 <script>iFrameResize({ log: false, checkOrigin: false }, '#testify-wall');</script>`}</code></pre>
                         </div>
@@ -535,6 +523,14 @@
 <style>
     /* Add any additional styles here */
 </style>
+
+{#if isEmbedModalOpen}
+    <EmbedTestimonialsModal
+        isOpen={isEmbedModalOpen}
+        onClose={() => isEmbedModalOpen = false}
+        spaceName={data.spaceName}
+    />
+{/if}
 
 
 

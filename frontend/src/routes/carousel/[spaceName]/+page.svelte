@@ -12,8 +12,12 @@
     let testimonials: any[] = [];
     let isLoading = true;
     let swiper: any;
+    let iframeResizerContentWindow: any;
 
     onMount(async () => {
+        // Initialize iframeResizer content window
+        iframeResizerContentWindow = (window as any).iframeResizerContentWindow;
+
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials/public/${data.spaceName}`);
             if (!response.ok) throw new Error('Failed to load testimonials');
@@ -44,6 +48,21 @@
                 breakpoints: {
                     768: { slidesPerView: 2 },
                     1024: { slidesPerView: 3 },
+                },
+                on: {
+                    slideChange: () => {
+                        // Notify parent when slide changes
+                        if (iframeResizerContentWindow) {
+                            iframeResizerContentWindow.sendMessage('slideChanged');
+                            iframeResizerContentWindow.size(); // Trigger resize
+                        }
+                    },
+                    resize: () => {
+                        // Notify parent when Swiper resizes
+                        if (iframeResizerContentWindow) {
+                            iframeResizerContentWindow.size();
+                        }
+                    }
                 }
             });
         } catch (error) {
@@ -56,6 +75,14 @@
         return name.split(' ').map(n => n[0]).join('').toUpperCase();
     }
 </script>
+
+<svelte:window
+    on:resize={() => {
+        if (iframeResizerContentWindow) {
+            iframeResizerContentWindow.size();
+        }
+    }}
+/>
 
 <div class="testify-carousel bg-transparent p-4 rounded-lg">
     {#if isLoading}
