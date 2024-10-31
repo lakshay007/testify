@@ -382,7 +382,7 @@
                             <li>
                                 <button
                                     class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'all' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                                    on:click={() => setActiveTab('all')}
+                                    on:click={() => { setActiveTab('all'); toggleSidebar(); }}
                                 >
                                     <Inbox size={18} class="mr-2" />
                                     All
@@ -391,7 +391,7 @@
                             <li>
                                 <button
                                     class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'spam' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                                    on:click={() => setActiveTab('spam')}
+                                    on:click={() => { setActiveTab('spam'); toggleSidebar(); }}
                                 >
                                     <Trash2 size={18} class="mr-2" />
                                     Spam
@@ -405,10 +405,19 @@
                             <li>
                                 <button
                                     class="flex items-center w-full p-2 rounded-md transition-colors text-gray-300 hover:bg-gray-700"
-                                    on:click={openEmbedModal}
+                                    on:click={() => { openEmbedModal(); toggleSidebar(); }}
                                 >
                                     <Code size={18} class="mr-2" />
                                     Embed Testimonials
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'customize' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
+                                    on:click={() => { setActiveTab('customize'); toggleSidebar(); }}
+                                >
+                                    <Settings size={18} class="mr-2" />
+                                    Customize Cards
                                 </button>
                             </li>
                         </ul>
@@ -417,7 +426,7 @@
                         <h3 class="text-sm font-semibold text-gray-400 uppercase mb-2">Analytics</h3>
                         <button
                             class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'analytics' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
-                            on:click={() => setActiveTab('analytics')}
+                            on:click={() => { setActiveTab('analytics'); toggleSidebar(); }}
                         >
                             <BarChart2 size={18} class="mr-2" />
                             View Analytics
