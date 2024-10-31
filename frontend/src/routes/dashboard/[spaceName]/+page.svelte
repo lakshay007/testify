@@ -2,11 +2,34 @@
     import { onMount } from 'svelte';
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
-    import { Loader, Inbox, Trash2, Code, BarChart2, Settings, Edit, Grid, Menu, X, Copy, Check, User, LogOut, LayoutDashboard, UserCircle } from "lucide-svelte";
+    import { 
+        Loader, 
+        Inbox, 
+        Trash2, 
+        Code, 
+        BarChart2, 
+        Settings, 
+        Edit, 
+        Grid, 
+        Menu, 
+        X, 
+        Copy, 
+        Check, 
+        User, 
+        LogOut, 
+        LayoutDashboard, 
+        UserCircle,
+        Quote,
+        Star
+    } from "lucide-svelte";
     import Header from "$lib/components/Header.svelte";
     import type { Collection } from '$lib/types/collection';
     import { goto } from '$app/navigation';
     import EmbedTestimonialsModal from "$lib/components/EmbedTestimonialsModal.svelte";
+    import { Input } from "$lib/components/ui/input";
+    import { Label } from "$lib/components/ui/label";
+    import { Avatar, AvatarFallback } from "$lib/components/ui/avatar";
+    import { fade } from 'svelte/transition';
 
     export let data: { spaceName: string };
     
@@ -19,8 +42,22 @@
     let copiedCarousel = false;
     let copiedWall = false;
     let isProfileDropdownOpen = false;
-    let spamThreshold = 0.6; // Configurable spam threshold
+    let spamThreshold = 0.6;
     let isEmbedModalOpen = false;
+    let notification = {
+        show: false,
+        message: '',
+        type: 'success' // or 'error'
+    };
+
+    const defaultCustomization = {
+        cardBgColor: "#ffffff",
+        cardBorderColor: "#e5e7eb",
+        textColor: "#374151",
+        fontSize: "16",
+        borderRadius: "8",
+        padding: "24"
+    };
 
     onMount(async () => {
         try {
@@ -149,6 +186,66 @@
     function openEmbedModal() {
         isEmbedModalOpen = true;
     }
+
+    function showNotification(message: string, type: 'success' | 'error' = 'success') {
+        notification = {
+            show: true,
+            message,
+            type
+        };
+        setTimeout(() => {
+            notification.show = false;
+        }, 3000);
+    }
+
+    async function saveCustomization() {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections/${data.spaceName}/customization`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    customization: collection.customization
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update customization');
+            }
+
+            const updatedCollection = await response.json();
+            collection = updatedCollection;
+            showNotification('Customization saved successfully');
+        } catch (error) {
+            console.error('Error saving customization:', error);
+            showNotification('Failed to save customization', 'error');
+        }
+    }
+
+    function resetCustomization() {
+        if (!collection) return;
+        
+        // Only update the local collection state, don't save to DB
+        collection = {
+            ...collection,
+            customization: { ...defaultCustomization }
+        };
+        
+        showNotification('Preview updated with default values. Click Save Changes to apply.');
+    }
+
+    // Add this variable to track changes
+    let hasUnsavedChanges = false;
+
+    // Add this function to handle customization changes
+    function handleCustomizationChange() {
+        if (!hasUnsavedChanges) {
+            hasUnsavedChanges = true;
+            showNotification('Click "Save Changes" to apply your customization', 'info');
+        }
+    }
 </script>
 
 <div class="min-h-screen bg-gray-900 text-gray-100">
@@ -237,6 +334,15 @@
                             >
                                 <Code size={18} class="mr-2" />
                                 Embed Testimonials
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                class="flex items-center w-full p-2 rounded-md transition-colors {activeTab === 'customize' ? 'bg-indigo-600 text-white' : 'text-gray-300 hover:bg-gray-700'}"
+                                on:click={() => setActiveTab('customize')}
+                            >
+                                <Settings size={18} class="mr-2" />
+                                Customize Cards
                             </button>
                         </li>
                     </ul>
@@ -514,6 +620,167 @@
                         <h2 class="text-xl lg:text-2xl font-bold text-indigo-300 mb-4">Analytics</h2>
                         <p class="text-gray-400">Analytics data will be displayed here.</p>
                     </div>
+                {:else if activeTab === 'customize'}
+                    <div class="bg-gray-800 p-4 lg:p-6 rounded-lg">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl lg:text-2xl font-bold text-indigo-300">Customize Testimonial Cards</h2>
+                        </div>
+                        
+                        {#if collection}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <Label class="text-indigo-300">Card Background Color</Label>
+                                    <div class="flex gap-2">
+                                        <Input 
+                                            type="color" 
+                                            bind:value={collection.customization.cardBgColor}
+                                            on:change={handleCustomizationChange}
+                                            class="w-12 h-12 p-1 bg-gray-700 border-gray-600"
+                                        />
+                                        <Input 
+                                            type="text" 
+                                            bind:value={collection.customization.cardBgColor}
+                                            on:input={handleCustomizationChange}
+                                            class="flex-1 bg-gray-700 border-gray-600 text-gray-200"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Label class="text-indigo-300">Card Border Color</Label>
+                                    <div class="flex gap-2">
+                                        <Input 
+                                            type="color" 
+                                            bind:value={collection.customization.cardBorderColor}
+                                            on:change={handleCustomizationChange}
+                                            class="w-12 h-12 p-1 bg-gray-700 border-gray-600"
+                                        />
+                                        <Input 
+                                            type="text" 
+                                            bind:value={collection.customization.cardBorderColor}
+                                            on:input={handleCustomizationChange}
+                                            class="flex-1 bg-gray-700 border-gray-600 text-gray-200"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Label class="text-indigo-300">Text Color</Label>
+                                    <div class="flex gap-2">
+                                        <Input 
+                                            type="color" 
+                                            bind:value={collection.customization.textColor}
+                                            on:change={handleCustomizationChange}
+                                            class="w-12 h-12 p-1 bg-gray-700 border-gray-600"
+                                        />
+                                        <Input 
+                                            type="text" 
+                                            bind:value={collection.customization.textColor}
+                                            on:input={handleCustomizationChange}
+                                            class="flex-1 bg-gray-700 border-gray-600 text-gray-200"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Label class="text-indigo-300">Font Size (px)</Label>
+                                    <Input 
+                                        type="number" 
+                                        bind:value={collection.customization.fontSize}
+                                        on:input={handleCustomizationChange}
+                                        min="12"
+                                        max="24"
+                                        class="bg-gray-700 border-gray-600 text-gray-200"
+                                    />
+                                </div>
+
+                                <div>
+                                    <Label class="text-indigo-300">Border Radius (px)</Label>
+                                    <Input 
+                                        type="number" 
+                                        bind:value={collection.customization.borderRadius}
+                                        on:input={handleCustomizationChange}
+                                        min="0"
+                                        max="24"
+                                        class="bg-gray-700 border-gray-600 text-gray-200"
+                                    />
+                                </div>
+
+                                <div>
+                                    <Label class="text-indigo-300">Padding (px)</Label>
+                                    <Input 
+                                        type="number" 
+                                        bind:value={collection.customization.padding}
+                                        on:input={handleCustomizationChange}
+                                        min="12"
+                                        max="48"
+                                        class="bg-gray-700 border-gray-600 text-gray-200"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="mt-6 col-span-full flex justify-end gap-2">
+                                <Button 
+                                    variant="outline"
+                                    class="text-indigo-300 border-indigo-300 hover:bg-indigo-300/10"
+                                    on:click={resetCustomization}
+                                >
+                                    Reset to Default
+                                </Button>
+                                <Button 
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white"
+                                    on:click={saveCustomization}
+                                >
+                                    Save Changes
+                                </Button>
+                            </div>
+
+                            <!-- Preview Card -->
+                            <div class="mt-8 col-span-full">
+                                <h3 class="text-lg font-semibold text-indigo-300 mb-4">Preview</h3>
+                                <Card 
+                                    class="border max-w-md"
+                                    style="
+                                        background-color: {collection.customization.cardBgColor}; 
+                                        border-color: {collection.customization.cardBorderColor}; 
+                                        border-radius: {collection.customization.borderRadius}px;
+                                    "
+                                >
+                                    <CardContent 
+                                        class="flex flex-col"
+                                        style="
+                                            color: {collection.customization.textColor}; 
+                                            font-size: {collection.customization.fontSize}px;
+                                            padding: {collection.customization.padding}px;
+                                        "
+                                    >
+                                        <div class="flex justify-between items-start mb-4">
+                                            <Quote class="text-indigo-500 h-8 w-8" />
+                                            <div class="flex gap-0.5">
+                                                {#each Array(5) as _}
+                                                    <Star class="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                                {/each}
+                                            </div>
+                                        </div>
+                                        <p class="mb-6">This is a preview of how your testimonial cards will look with the current customization settings.</p>
+                                        <div class="flex items-center">
+                                            <Avatar class="h-12 w-12 mr-4">
+                                                <AvatarFallback>P</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p class="font-semibold">Preview Name</p>
+                                                <p class="text-sm opacity-75">Preview Title</p>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        {:else}
+                            <div class="text-center py-12">
+                                <p class="text-xl text-gray-400">Loading...</p>
+                            </div>
+                        {/if}
+                    </div>
                 {/if}
             {/if}
         </main>
@@ -530,6 +797,20 @@
         onClose={() => isEmbedModalOpen = false}
         spaceName={data.spaceName}
     />
+{/if}
+
+<!-- Add this before the closing </div> of the main container -->
+{#if notification.show}
+    <div
+        transition:fade
+        class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg 
+        {notification.type === 'success' ? 'bg-green-500' : 
+         notification.type === 'error' ? 'bg-red-500' : 
+         'bg-blue-500'} text-white z-50"
+        role="alert"
+    >
+        {notification.message}
+    </div>
 {/if}
 
 

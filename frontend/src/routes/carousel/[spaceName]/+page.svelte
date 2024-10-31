@@ -13,12 +13,24 @@
     let isLoading = true;
     let swiper: any;
     let iframeResizerContentWindow: any;
+    let collection: any = null;
+    let notification = {
+        show: false,
+        message: '',
+        type: 'success' // or 'error'
+    };
 
     onMount(async () => {
         // Initialize iframeResizer content window
         iframeResizerContentWindow = (window as any).iframeResizerContentWindow;
 
         try {
+            // First fetch collection to get customization settings
+            const collectionResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections/${data.spaceName}`);
+            if (!collectionResponse.ok) throw new Error('Failed to load collection');
+            collection = await collectionResponse.json();
+
+            // Then fetch testimonials
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials/public/${data.spaceName}`);
             if (!response.ok) throw new Error('Failed to load testimonials');
             testimonials = await response.json();
@@ -74,6 +86,17 @@
     function getInitials(name: string) {
         return name.split(' ').map(n => n[0]).join('').toUpperCase();
     }
+
+    function showNotification(message: string, type: 'success' | 'error' = 'success') {
+        notification = {
+            show: true,
+            message,
+            type
+        };
+        setTimeout(() => {
+            notification.show = false;
+        }, 3000);
+    }
 </script>
 
 <svelte:window
@@ -96,8 +119,22 @@
             <div class="swiper-wrapper">
                 {#each testimonials as testimonial}
                     <div class="swiper-slide px-1">
-                        <Card class="border border-gray-200 dark:border-gray-700 max-w-full">
-                            <CardContent class="p-6 flex flex-col">
+                        <Card 
+                            class="border max-w-full"
+                            style="
+                                background-color: {collection?.customization?.cardBgColor || '#ffffff'}; 
+                                border-color: {collection?.customization?.cardBorderColor || '#e5e7eb'}; 
+                                border-radius: {collection?.customization?.borderRadius || '8'}px;
+                            "
+                        >
+                            <CardContent 
+                                class="flex flex-col"
+                                style="
+                                    color: {collection?.customization?.textColor || '#374151'}; 
+                                    font-size: {collection?.customization?.fontSize || '16'}px;
+                                    padding: {collection?.customization?.padding || '24'}px;
+                                "
+                            >
                                 <div class="flex justify-between items-start mb-4">
                                     <Quote class="text-indigo-500 h-8 w-8" />
                                     {#if testimonial.rating}
@@ -138,6 +175,16 @@
         </div>
     {/if}
 </div>
+
+{#if notification.show}
+    <div
+        transition:fade
+        class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg {notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white"
+        role="alert"
+    >
+        {notification.message}
+    </div>
+{/if}
 
 <style lang="postcss">
     :global(html, body) {

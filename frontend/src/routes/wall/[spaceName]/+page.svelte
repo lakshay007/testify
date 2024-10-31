@@ -7,9 +7,14 @@
     export let data: { spaceName: string };
     let testimonials: any[] = [];
     let isLoading = true;
+    let collection: any = null;
 
     onMount(async () => {
         try {
+            const collectionResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/collections/${data.spaceName}`);
+            if (!collectionResponse.ok) throw new Error('Failed to load collection');
+            collection = await collectionResponse.json();
+
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials/public/${data.spaceName}`);
             if (!response.ok) throw new Error('Failed to load testimonials');
             testimonials = await response.json();
@@ -35,8 +40,22 @@
     {:else}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {#each testimonials as testimonial}
-                <Card class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                    <CardContent class="p-6 flex flex-col">
+                <Card 
+                    class="border"
+                    style="
+                        background-color: {collection?.customization?.cardBgColor || '#ffffff'}; 
+                        border-color: {collection?.customization?.cardBorderColor || '#e5e7eb'}; 
+                        border-radius: {collection?.customization?.borderRadius || '8'}px;
+                    "
+                >
+                    <CardContent 
+                        class="flex flex-col"
+                        style="
+                            color: {collection?.customization?.textColor || '#374151'}; 
+                            font-size: {collection?.customization?.fontSize || '16'}px;
+                            padding: {collection?.customization?.padding || '24'}px;
+                        "
+                    >
                         <div class="flex justify-between items-start mb-4">
                             <Quote class="text-indigo-500 h-8 w-8 flex-shrink-0" />
                             {#if testimonial.rating}
@@ -49,16 +68,16 @@
                                 </div>
                             {/if}
                         </div>
-                        <p class="text-gray-700 dark:text-gray-300 mb-6 flex-grow">{testimonial.testimonialText}</p>
+                        <p class="mb-6 flex-grow">{testimonial.testimonialText}</p>
                         <div class="flex items-center mt-auto">
                             <Avatar class="h-12 w-12 mr-4 flex-shrink-0">
                                 <AvatarImage src={testimonial.extraInfo?.avatarUrl} alt={testimonial.extraInfo?.name || 'Anonymous'} />
                                 <AvatarFallback>{getInitials(testimonial.extraInfo?.name || 'A')}</AvatarFallback>
                             </Avatar>
                             <div class="min-w-0">
-                                <p class="font-semibold text-gray-900 dark:text-gray-100 truncate">{testimonial.extraInfo?.name || 'Anonymous'}</p>
+                                <p class="font-semibold truncate">{testimonial.extraInfo?.name || 'Anonymous'}</p>
                                 {#if testimonial.extraInfo?.title}
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{testimonial.extraInfo.title}</p>
+                                    <p class="text-sm opacity-75 truncate">{testimonial.extraInfo.title}</p>
                                 {/if}
                             </div>
                         </div>

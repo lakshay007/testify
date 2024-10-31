@@ -16,7 +16,13 @@ router.post('/', isSignedIn, async (req, res) => {
       spaceName,
       headerTitle,
       customMessage,
-      questions
+      questions,
+      extraInfo,
+      collectStarRatings,
+      buttonColor,
+      language,
+      logo,
+      customization
     } = req.body;
 
     // Add validation for required fields
@@ -39,14 +45,22 @@ router.post('/', isSignedIn, async (req, res) => {
     const collection = new Collection({
       userId: req.user.userId,
       spaceName: sanitizedSpaceName,
-      logo: req.body.logo,
+      logo,
       headerTitle,
       customMessage,
       questions,
-      extraInfo: req.body.extraInfo || {},
-      collectStarRatings: req.body.collectStarRatings || false,
-      buttonColor: req.body.buttonColor || "#4F46E5",
-      language: req.body.language || "English"
+      extraInfo: extraInfo || {},
+      collectStarRatings: collectStarRatings || false,
+      buttonColor: buttonColor || "#4F46E5",
+      language: language || "English",
+      customization: {
+        cardBgColor: customization?.cardBgColor || "#ffffff",
+        cardBorderColor: customization?.cardBorderColor || "#e5e7eb",
+        textColor: customization?.textColor || "#374151",
+        fontSize: customization?.fontSize || "16",
+        borderRadius: customization?.borderRadius || "8",
+        padding: customization?.padding || "24"
+      }
     });
 
     await collection.save();
@@ -73,7 +87,7 @@ router.get('/:spaceName', async (req, res) => {
     try {
         const collection = await Collection.findOne(
             { spaceName: req.params.spaceName },
-            { userId: 0, _id: 0 } // Exclude these fields
+            { userId: 0, _id: 0, testimonials: 0 } // Exclude these fields
         );
         
         if (!collection) {
@@ -135,7 +149,9 @@ router.put('/:spaceName', isSignedIn, async (req, res) => {
         };
 
         const updatedCollection = await Collection.findOneAndUpdate(
-            { spaceName: req.params.spaceName },
+            { spaceName: req.params.spaceName,
+              userId: req.user.userId
+            },
             updates,
             { new: true }
         );
@@ -145,6 +161,45 @@ router.put('/:spaceName', isSignedIn, async (req, res) => {
         console.error('Error updating collection:', error);
         res.status(500).json({ 
             message: 'Error updating collection', 
+            error: error.message 
+        });
+    }
+});
+
+// Add this new route for updating customizations
+router.put('/:spaceName/customization', isSignedIn, async (req, res) => {
+    try {
+        const collection = await Collection.findOne({ 
+            spaceName: req.params.spaceName,
+            userId: req.user.userId 
+        });
+
+        if (!collection) {
+            return res.status(404).json({ message: 'Collection not found' });
+        }
+
+        const { customization } = req.body;
+
+        const updatedCollection = await Collection.findOneAndUpdate(
+            { spaceName: req.params.spaceName },
+            { 
+                customization: {
+                    cardBgColor: customization?.cardBgColor || "#ffffff",
+                    cardBorderColor: customization?.cardBorderColor || "#e5e7eb",
+                    textColor: customization?.textColor || "#374151",
+                    fontSize: customization?.fontSize || "16",
+                    borderRadius: customization?.borderRadius || "8",
+                    padding: customization?.padding || "24"
+                }
+            },
+            { new: true }
+        );
+
+        res.json(updatedCollection);
+    } catch (error) {
+        console.error('Error updating customization:', error);
+        res.status(500).json({ 
+            message: 'Error updating customization', 
             error: error.message 
         });
     }

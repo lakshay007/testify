@@ -38,6 +38,16 @@
     const MAX_HEIGHT = 200;
     const QUALITY = 0.7;
 
+    // Add default customization values
+    let customization = {
+        cardBgColor: "#ffffff",      // Current white background
+        cardBorderColor: "#e5e7eb",  // Current gray-200
+        textColor: "#374151",        // Current gray-700
+        fontSize: "16",              // Default font size
+        borderRadius: "8",           // Current rounded-lg equivalent
+        padding: "24"                // Current p-6 equivalent
+    };
+
     function addQuestion() {
       if (questions.length < 5) {
         questions = [...questions, ""];
@@ -120,7 +130,8 @@
             extraInfo,
             collectStarRatings,
             buttonColor,
-            language
+            language,
+            customization
           })
         });
 
