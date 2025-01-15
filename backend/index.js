@@ -56,7 +56,7 @@ app.get('/keep-alive', (req, res) => {
 });
 
 
-const keepAliveInterval = 10 * 60 * 1000; // 14 minutes
+const keepAliveInterval = 5 * 60 * 1000; // 5 minutes
 
 function keepAlive() {
     fetch(url + 'keep-alive')
