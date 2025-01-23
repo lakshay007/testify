@@ -158,29 +158,46 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {#each collections as collection}
                             <div class="relative">
-                                <Button 
-                                    on:click={() => openEditCollectionModal(collection)}
-                                    class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 p-2 rounded-full z-10"
-                                >
-                                    <Edit class="h-4 w-4 text-indigo-300" />
-                                </Button>
-                                <Card class="bg-gray-800 border-gray-700 hover:border-indigo-500">
-                                    <CardHeader>
-                                        <a href="/dashboard/{collection.spaceName}" class="block">
-                                            <CardTitle class="text-indigo-300">{collection.spaceName}</CardTitle>
-                                        </a>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p class="text-sm text-gray-400">{collection.testimonials} testimonials</p>
-                                        <a 
-                                            href="/{collection.spaceName}" 
-                                            class="mt-4 flex items-center text-indigo-400 hover:text-indigo-300"
-                                        >
-                                            <span>View collection cards</span>
-                                            <ChevronRight class="h-4 w-4 ml-1" />
-                                        </a>
-                                    </CardContent>
-                                </Card>
+                                <div class="absolute top-2 right-2 z-10 group">
+                                    <Button 
+                                        on:click={() => openEditCollectionModal(collection)}
+                                        class="bg-gray-700 hover:bg-indigo-600 p-2 rounded-full transition-colors duration-200"
+                                    >
+                                        <Edit class="h-4 w-4 text-indigo-300 group-hover:text-white" />
+                                    </Button>
+                                    <div class="absolute hidden group-hover:block right-0 mt-2 px-2 py-1 bg-gray-800 text-xs text-gray-300 rounded shadow-lg whitespace-nowrap">
+                                        Edit card settings
+                                    </div>
+                                </div>
+                                <a href="/dashboard/{collection.spaceName}" class="block">
+                                    <Card class="bg-gray-800 border-gray-700 hover:border-indigo-500">
+                                        <CardHeader>
+                                            <CardTitle class="text-indigo-300 flex items-center">
+                                                {collection.spaceName}
+                                                <span class="ml-2 text-xs text-gray-400 font-normal">(Click here to manage)</span>
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p class="text-sm text-gray-400">{collection.testimonials} testimonials</p>
+                                            <div class="mt-4 border-t border-gray-700 pt-4">
+                                                <a 
+                                                    href="/{collection.spaceName}" 
+                                                    class="flex items-center justify-between text-indigo-400 hover:text-indigo-300 p-2 rounded-md hover:bg-gray-700"
+                                                    on:click|stopPropagation={(e) => {
+                                                        e.preventDefault();
+                                                        goto(`/${collection.spaceName}`);
+                                                    }}
+                                                >
+                                                    <div>
+                                                        <span class="block">View collection cards</span>
+                                                        <span class="text-xs text-gray-400">Preview public testimonial card</span>
+                                                    </div>
+                                                    <ChevronRight class="h-4 w-4 ml-1" />
+                                                </a>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </a>
                             </div>
                         {/each}
                     </div>
