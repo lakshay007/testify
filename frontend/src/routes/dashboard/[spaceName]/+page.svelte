@@ -257,7 +257,7 @@
             <Button 
                 variant="ghost" 
                 size="icon" 
-                class="text-indigo-400 hover:text-indigo-300"
+                class="text-indigo-400 hover:bg-indigo-300"
                 on:click={toggleProfileDropdown}
             >
                 <User size={24} />
