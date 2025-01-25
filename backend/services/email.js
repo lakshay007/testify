@@ -1,21 +1,21 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
-    // Create transporter with Gmail service
+   
     const transporter = nodemailer.createTransport({
-        service: 'gmail',  // Using Gmail service instead of custom SMTP
+        service: 'gmail',  
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS // Use Gmail App Password
+            pass: process.env.EMAIL_PASS 
         }
     });
 
     const mailOptions = {
-        from: process.env.EMAIL_USER, // Use EMAIL_USER as the from address
+        from: process.env.EMAIL_USER, 
         to: options.to,
         subject: options.subject,
         text: options.text,
-        html: options.html // Add support for HTML emails
+        html: options.html 
     };
 
     try {
