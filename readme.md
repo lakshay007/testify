@@ -27,7 +27,6 @@ This project is a modern, user-friendly platform for collecting and managing tes
 
 - Node.js (v14 or later)
 - npm or yarn
-- [Any other specific requirements]
 
 ### Installation
 
@@ -62,14 +61,12 @@ We welcome contributions to this project. Please follow these steps to contribut
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
 
-[Specify the license under which this project is released, e.g., MIT, GPL, etc.]
 
 ## Contact
 
 Lakshay - (https://x.com/Lakshayc0) - dmslakshay@gmail.com
 
-Project Link: [https://github.com/your-username/testimonial-collection-platform](https://github.com/your-username/testimonial-collection-platform)
+
 
 
